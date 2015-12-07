@@ -43,75 +43,77 @@ var Player = function(x, y, speed) {
 //Once the player reaches the other side, reintialize the player position
 //and increase the enemy count to a a maximum of 7
 //check for the boundary
-Player.prototype.update = function() {        
-     
-     if (this.y <= FINAL_POINT) {
+Player.prototype.update = function() {
+    if (this.y <= FINAL_POINT) {
         this.x = INITIAL_X;
         this.y = INITIAL_Y;
            
         //Allow a maximum of only 7 enemy bugs
-        if(enemyCount < 7 )
-        {  
+        if (enemyCount < 7 )
+        {
             this.callEnemy();
-            enemyCount++;    
+            enemyCount++;
         }
         else
         {
             success = 1;
             this.speed = 0;
             this.x = INITIAL_X;
-            this.y = INITIAL_Y;         
-            for(var i = 0; i < enemyCount; i++)
+            this.y = INITIAL_Y;
+            stepX = 0;
+            stepY = 0;
+            for (var i = 0; i < enemyCount; i++)
             {
                 allEnemies[i].x = 0;
                 allEnemies[i].y = 0;
-                allEnemies[i].speed = 0;       
+                allEnemies[i].speed = 0;
             }
-            ctx.font = "20px Verdana";   
+            ctx.font = "20px Verdana";
             ctx.strokeStyle='green';
-            ctx.strokeText(" YOU WON !!! Reload to Continue The Game !!!", 20, 30);              
+            ctx.strokeText(" YOU WON !!! Reload to Continue The Game !!!", 20, 30);
         }
     }
 
     //check for the boundary and adjust the player position accordingly
-    if(this.x < 0) {
-        this.x = 0;
+    if (this.x <= -2) {
+        this.x = -2;
     }
-    if(this.x > 400) {
-        this.x = 400;
+    if(this.x >= 402) {
+        this.x = 402;
     }
-    if(this.y > 380) {
-        this.y = 380;
+    if(this.y >= 383) {
+        this.y = 383;
     }
 
     //Check for collision
     //Reset the player position if collided
-    for(var i = 0; i < enemyCount; i++)
+    for (var i = 0; i < enemyCount; i++)
     {
-        if(
-            this.x <= (allEnemies[i].x + 40) &&
+        if (this.x <= (allEnemies[i].x + 40) &&
             allEnemies[i].x <= (this.x + 40) &&
             this.y <= (allEnemies[i].y + 40) &&
             allEnemies[i].y <= (this.y + 40)) {
             
             this.x = INITIAL_X;
-            this.y = INITIAL_Y;
+            this.y = INITIAL_Y;            
 
-            if(failCount == 3)
+            if (failCount == 3)
             {
                 this.speed = 0;
-                for(var i = 0; i < enemyCount; i++)
+                stepX = 0;
+                stepY = 0;
+                for (var i = 0; i < enemyCount; i++)
                 {
                     allEnemies[i].speed = 0;
                 }
-                ctx.font = "20px Verdana";   
+                ctx.font = "20px Verdana";
                 ctx.strokeStyle='red';
-                ctx.strokeText(" YOU LOST !!! Reload to Continue The Game !!!", 20, 30);  
+                ctx.strokeText(" YOU LOST !!! Reload to Continue The Game !!!", 20, 30);
             }
             else
             {
                 failCount++;
-            }            
+            }
         }
     }
 };
@@ -119,79 +121,84 @@ Player.prototype.update = function() {
 // Draw the player on the screen, required method for game
 //Update the level on the screen and displays the star earned ny the player
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);  
-    if(enemyCount < 8)
-    { 
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    if (enemyCount < 8)
+    {
         ctx.clearRect(170, 590, 200, 30);
-        ctx.font="20px Verdana";   
+        ctx.font="20px Verdana";
         ctx.strokeStyle='blue';
-        ctx.strokeText("LEVEL : " + enemyCount, 205, 610); 
+        ctx.strokeText("LEVEL : " + enemyCount, 205, 610);
 
-        for(var i = 1;  i < enemyCount; i++)
+        for (var i = 1;  i < enemyCount; i++)
         {
-            ctx.drawImage(Resources.get('images/Star.png'), -10 + (i-1)*70, 435); 
-        }  
+            ctx.drawImage(Resources.get('images/Star.png'), -10 + (i-1)*70, 435);
+        }
 
-        if(enemyCount == 7 && success == 1)
+        if (enemyCount == 7 && success == 1)
         {
-            ctx.drawImage(Resources.get('images/Star.png'), -10 + 6*70, 435);            
+            ctx.drawImage(Resources.get('images/Star.png'), -10 + 6*70, 435);
         }
     }
 };
 
-//Checks if the user has pressed the up, down, left, and right arrow keys. 
-//If so, the player is moved in the corresponding direction. 
-//Also checks if the user has pressed Enter key. 
+//Checks if the user has pressed the up, down, left, and right arrow keys.
+//If so, the player is moved in the corresponding direction.
+//Also checks if the user has pressed Enter key.
 //If so, the player is changed accordingly.
+//Step size is made as 101 * 83
 Player.prototype.handleInput = function(keyPress) {
-
-    if(keyPress == 'left') {
-        this.x -= this.speed + 20;
+    if (keyPress == 'left') {
+        this.x -= this.speed + stepX;
+        console.log(this.x);
     }
-    if(keyPress == 'right') {
-        this.x += this.speed + 20;
+    if (keyPress == 'right') {
+        this.x += this.speed + stepX;
+        console.log(this.x);
     }
-    if(keyPress == 'up') {
-        this.y -= this.speed;
-    } 
-    if(keyPress == 'down') {
-        this.y += this.speed;
+    if (keyPress == 'up') {
+        this.y -= this.speed + stepY;
+        console.log(this.y);
     }
-    if(keyPress == 'enter') {
+    if (keyPress == 'down') {
+        this.y += this.speed + stepY;
+        console.log(this.y);
+    }
+    if (keyPress == 'enter') {
         playerCount++;
-        if(playerCount == 1){
+        if (playerCount == 1){
             this.sprite = 'images/char-cat-girl.png';
         }
-        else if(playerCount == 2){
+        else if (playerCount == 2){
             this.sprite = 'images/char-horn-girl.png';
         }
-        else if(playerCount == 3){
+        else if (playerCount == 3){
             this.sprite = 'images/char-pink-girl.png';
         }
-        else if(playerCount == 4){
+        else if (playerCount == 4){
             this.sprite = 'images/char-princess-girl.png';
         }
-        else{
+        else {
             playerCount = 0;
             this.sprite = 'images/char-boy.png';
-        }     
+        }
     }
 };
 
-
+//This function calls the enemy bug in each level
 Player.prototype.callEnemy = function() {
    var enemy = new Enemy(Math.random(), Math.random() * 200, Math.random() * 250);
-   allEnemies.push(enemy);   
+   allEnemies.push(enemy);
 };
-
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-var PLAYER_SPEED = 80;
+var PLAYER_SPEED = 60;
 var INITIAL_X = 200;
 var INITIAL_Y = 300;
-var FINAL_POINT = -20;
+var FINAL_POINT = -32;
+var stepX = 41;
+var stepY = 23;
 var enemyCount = 0;
 var playerCount = 0;
 var failCount = 0;
@@ -215,5 +222,5 @@ document.addEventListener('keyup', function(e) {
         13: 'enter'
     };
 
-    player.handleInput(allowedKeys[e.keyCode]);    
+    player.handleInput(allowedKeys[e.keyCode]);
 });
