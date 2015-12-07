@@ -149,19 +149,15 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(keyPress) {
     if (keyPress == 'left') {
         this.x -= this.speed + stepX;
-        console.log(this.x);
     }
     if (keyPress == 'right') {
         this.x += this.speed + stepX;
-        console.log(this.x);
     }
     if (keyPress == 'up') {
         this.y -= this.speed + stepY;
-        console.log(this.y);
     }
     if (keyPress == 'down') {
         this.y += this.speed + stepY;
-        console.log(this.y);
     }
     if (keyPress == 'enter') {
         playerCount++;
