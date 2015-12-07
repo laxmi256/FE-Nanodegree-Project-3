@@ -45,24 +45,23 @@ var Player = function(x, y, speed) {
 //check for the boundary
 Player.prototype.update = function() {        
      
-     if (this.y <= finalpoint) {
-        this.x = initialx;
-        this.y = initialy;
+     if (this.y <= FINAL_POINT) {
+        this.x = INITIAL_X;
+        this.y = INITIAL_Y;
            
         //Allow a maximum of only 7 enemy bugs
-        if(enemycount < 7 )
+        if(enemyCount < 7 )
         {  
-            player.callEnemy();
-            enemycount++;    
-
+            this.callEnemy();
+            enemyCount++;    
         }
         else
         {
             success = 1;
             this.speed = 0;
-            this.x = initialx;
-            this.y = initialy;         
-            for(var i = 0; i < enemycount; i++)
+            this.x = INITIAL_X;
+            this.y = INITIAL_Y;         
+            for(var i = 0; i < enemyCount; i++)
             {
                 allEnemies[i].x = 0;
                 allEnemies[i].y = 0;
@@ -70,72 +69,70 @@ Player.prototype.update = function() {
             }
             ctx.font = "20px Verdana";   
             ctx.strokeStyle='green';
-            ctx.strokeText(" YOU WON !!! Press F5 To Restart The Game !!!", 20, 30);              
+            ctx.strokeText(" YOU WON !!! Reload to Continue The Game !!!", 20, 30);              
         }
     }
 
     //check for the boundary and adjust the player position accordingly
-    if(this.x < -20) {
-        this.x = -20;
+    if(this.x < 0) {
+        this.x = 0;
     }
-    if(this.x > 420) {
-        this.x = 420;
+    if(this.x > 400) {
+        this.x = 400;
     }
-    if(this.y > 440) {
-        this.y = 440;
+    if(this.y > 380) {
+        this.y = 380;
     }
 
     //Check for collision
     //Reset the player position if collided
-    for(var i = 0; i < enemycount; i++)
+    for(var i = 0; i < enemyCount; i++)
     {
-        if (
-            player.x <= (allEnemies[i].x + 40)
-            && allEnemies[i].x <= (player.x + 40)
-            && player.y <= (allEnemies[i].y + 40)
-            && allEnemies[i].y <= (player.y + 40)
-        ) {
+        if(
+            this.x <= (allEnemies[i].x + 40) &&
+            allEnemies[i].x <= (this.x + 40) &&
+            this.y <= (allEnemies[i].y + 40) &&
+            allEnemies[i].y <= (this.y + 40)) {
             
-            this.x = initialx;
-            this.y = initialy;
+            this.x = INITIAL_X;
+            this.y = INITIAL_Y;
 
-            if(failcount == 3)
+            if(failCount == 3)
             {
-
                 this.speed = 0;
-                for(var i = 0; i < enemycount; i++)
+                for(var i = 0; i < enemyCount; i++)
                 {
                     allEnemies[i].speed = 0;
                 }
                 ctx.font = "20px Verdana";   
                 ctx.strokeStyle='red';
-                ctx.strokeText(" YOU LOST !!! Press F5 To Restart The Game !!!", 20, 30);  
+                ctx.strokeText(" YOU LOST !!! Reload to Continue The Game !!!", 20, 30);  
             }
             else
             {
-                failcount++;
+                failCount++;
             }            
         }
     }
-}
+};
 
 // Draw the player on the screen, required method for game
 //Update the level on the screen and displays the star earned ny the player
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);  
-    if(enemycount < 8)
+    if(enemyCount < 8)
     { 
         ctx.clearRect(170, 590, 200, 30);
         ctx.font="20px Verdana";   
         ctx.strokeStyle='blue';
-        ctx.strokeText("LEVEL : " + enemycount, 205, 610); 
+        ctx.strokeText("LEVEL : " + enemyCount, 205, 610); 
 
-        for(var i = 1;  i < enemycount; i++)
+        for(var i = 1;  i < enemyCount; i++)
         {
             ctx.drawImage(Resources.get('images/Star.png'), -10 + (i-1)*70, 435); 
         }  
 
-        if(enemycount == 7 && success == 1)
+        if(enemyCount == 7 && success == 1)
         {
             ctx.drawImage(Resources.get('images/Star.png'), -10 + 6*70, 435);            
         }
@@ -149,10 +146,10 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(keyPress) {
 
     if(keyPress == 'left') {
-        this.x -= this.speed;
+        this.x -= this.speed + 20;
     }
     if(keyPress == 'right') {
-        this.x += this.speed;
+        this.x += this.speed + 20;
     }
     if(keyPress == 'up') {
         this.y -= this.speed;
@@ -161,21 +158,21 @@ Player.prototype.handleInput = function(keyPress) {
         this.y += this.speed;
     }
     if(keyPress == 'enter') {
-        playercount++;
-        if(playercount == 1){
+        playerCount++;
+        if(playerCount == 1){
             this.sprite = 'images/char-cat-girl.png';
         }
-        else if(playercount == 2){
+        else if(playerCount == 2){
             this.sprite = 'images/char-horn-girl.png';
         }
-        else if(playercount == 3){
+        else if(playerCount == 3){
             this.sprite = 'images/char-pink-girl.png';
         }
-        else if(playercount == 4){
+        else if(playerCount == 4){
             this.sprite = 'images/char-princess-girl.png';
         }
         else{
-            playercount = 0;
+            playerCount = 0;
             this.sprite = 'images/char-boy.png';
         }     
     }
@@ -191,21 +188,21 @@ Player.prototype.callEnemy = function() {
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-var speed = 30;
-var initialx = 200;
-var initialy = 350;
-var finalpoint = -7;
-var enemycount = 0;
-var playercount = 0;
-var failcount = 0;
+var PLAYER_SPEED = 80;
+var INITIAL_X = 200;
+var INITIAL_Y = 300;
+var FINAL_POINT = -20;
+var enemyCount = 0;
+var playerCount = 0;
+var failCount = 0;
 var success = 0;
 
 var allEnemies = [];
-var player = new Player(initialx, initialy, speed);
+var player = new Player(INITIAL_X, INITIAL_Y, PLAYER_SPEED);
 
 //To start the game, initially call an enemy bug
 player.callEnemy();
-enemycount++;
+enemyCount++;
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
